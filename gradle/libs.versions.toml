@@ -3,9 +3,11 @@
 
 [versions]
 guava = "33.4.6-jre"
+kotlinx-cli = "0.3.6"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
+kotlinx-cli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinx-cli" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.2.0" }

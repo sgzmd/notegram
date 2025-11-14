@@ -1,3 +1,11 @@
 package com.notegram.config
 
-// Placeholder for bot runtime configuration definitions.
+/**
+ * Represents runtime configuration derived from CLI flags or environment.
+ */
+data class BotConfig(
+    val telegramToken: String,
+    val allowedUserIds: Set<Long>,
+    val assemblyAiToken: String,
+    val geminiToken: String,
+)
