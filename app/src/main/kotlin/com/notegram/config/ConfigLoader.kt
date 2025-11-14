@@ -11,7 +11,7 @@ object ConfigLoader {
 
         return BotConfig(
             telegramToken = parsed.telegramToken,
-            allowedUserIds = parseAllowedUsers(parsed.allowedUsersCsv),
+            allowedUsernames = parseAllowedUsers(parsed.allowedUsersCsv),
             assemblyAiToken = parsed.assemblyAiToken,
             geminiToken = parsed.geminiToken,
         )
@@ -23,17 +23,19 @@ object ConfigLoader {
         require(args.geminiToken.isNotBlank()) { "Gemini token cannot be blank" }
     }
 
-    private fun parseAllowedUsers(csv: String): Set<Long> {
+    private fun parseAllowedUsers(csv: String): Set<String> {
         require(csv.isNotBlank()) { "Allowed user list cannot be blank" }
-        val ids = csv
+        val usernames = csv
             .split(",")
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .map { value ->
-                value.toLongOrNull() ?: throw IllegalArgumentException("Invalid user id: $value")
-            }
+            .map { normalizeUsername(it) }
             .toSet()
-        require(ids.isNotEmpty()) { "Allowed user list cannot be empty" }
-        return ids
+        require(usernames.isNotEmpty()) { "Allowed user list cannot be empty" }
+        return usernames
+    }
+
+    private fun normalizeUsername(raw: String): String {
+        val cleaned = raw.trim().removePrefix("@").lowercase()
+        require(cleaned.isNotEmpty()) { "Username cannot be blank: '$raw'" }
+        return cleaned
     }
 }

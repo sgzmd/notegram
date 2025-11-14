@@ -111,6 +111,7 @@ CODING RULES FOR ALL STAGES
 - Produce unit tests when feasible (JUnit 5 + MockWebServer).  
 - All tests must pass prior to submission.
 - Each stage MUST contain tests and they must pass.
+- At the end of each stage update DOCS.md with detailed documentation how the code works - detect what had changed during current stage and add this update, update all of the documentation, verify the entire document to ensure it's up to date.
 - Submit all code to git after finishing stage
 
 

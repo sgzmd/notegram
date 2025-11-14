@@ -46,10 +46,11 @@ class TelegramUpdateHandler(
     private fun Message.toIncomingMessage(): IncomingTelegramMessage? {
         val chatId = chat()?.id() ?: return null
         val media = extractMedia()
+        val username = from()?.username()?.trim()?.lowercase()
         return IncomingTelegramMessage(
             chatId = chatId,
             messageId = messageId(),
-            userId = from()?.id()?.toLong(),
+            username = username,
             media = media,
         )
     }
@@ -112,14 +113,14 @@ class TelegramMessageProcessor(
     private val logger = KotlinLogging.logger {}
 
     suspend fun process(message: IncomingTelegramMessage) {
-        val userId = message.userId
-        if (!allowedUserChecker.isAllowed(userId)) {
-            logger.info { "Rejecting message from non-allowed user ${userId ?: "unknown"}" }
+        val username = message.username
+        if (!allowedUserChecker.isAllowed(username)) {
+            logger.info { "Rejecting message from non-allowed user ${username ?: "unknown"}" }
             responseSender.sendProfanity(message.chatId, message.messageId, profanityGenerator.randomQuote())
             return
         }
 
-        val safeUserId = requireNotNull(userId) { "Allowed user id cannot be null" }
+        val safeUsername = requireNotNull(username) { "Allowed username cannot be null" }
         val media = message.media
         if (media == null) {
             responseSender.sendUnsupportedMessage(message.chatId, message.messageId)
@@ -141,7 +142,7 @@ class TelegramMessageProcessor(
                 MediaProcessingRequest(
                     chatId = message.chatId,
                     messageId = message.messageId,
-                    userId = safeUserId,
+                    username = safeUsername,
                     media = media,
                     downloadedMedia = downloaded,
                 ),

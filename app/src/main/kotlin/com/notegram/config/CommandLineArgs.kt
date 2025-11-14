@@ -26,7 +26,7 @@ data class CommandLineArgs(
             val allowedUsers by parser.option(
                 ArgType.String,
                 fullName = "allowed_users",
-                description = "Comma-separated list of allowed Telegram user IDs",
+                description = "Comma-separated list of allowed Telegram usernames",
             ).required()
 
             val assemblyAiToken by parser.option(

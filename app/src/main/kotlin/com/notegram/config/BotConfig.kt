@@ -5,7 +5,7 @@ package com.notegram.config
  */
 data class BotConfig(
     val telegramToken: String,
-    val allowedUserIds: Set<Long>,
+    val allowedUsernames: Set<String>,
     val assemblyAiToken: String,
     val geminiToken: String,
 )
