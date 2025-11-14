@@ -110,6 +110,7 @@ CODING RULES FOR ALL STAGES
 - Write deterministic, testable functions.  
 - Produce unit tests when feasible (JUnit 5 + MockWebServer).  
 - All tests must pass prior to submission.
+- Each stage MUST contain tests and they must pass.
 - Submit all code to git after finishing stage
 
 
