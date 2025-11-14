@@ -9,6 +9,7 @@
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
@@ -23,6 +24,15 @@ dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
     implementation(libs.kotlinx.cli)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.telegram.bot)
+    implementation(libs.kotlin.logging)
+
+    runtimeOnly(libs.logback.classic)
+
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 testing {
