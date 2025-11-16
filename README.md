@@ -9,6 +9,7 @@ This repository hosts a Kotlin-based Telegram bot that transcribes user-submitte
 - Bash-compatible shell
 - Access tokens for Telegram, AssemblyAI, and Gemini
 - At least one Telegram username allowed to interact with the bot (prefix optional `@` will be stripped)
+- Whisper model file path accessible to the runtime (set `WHISPER_MODEL_PATH`)
 
 ### 2. Create a local environment file
 Create `.env.local` in the repository root (or another path referenced via `ENV_FILE`). Example:
@@ -18,6 +19,7 @@ TELEGRAM_TOKEN=123456789:ABCDEF_your_bot_token
 ALLOWED_USERS=sgzmd,design
 ASSEMBLYAI_TOKEN=assemblyai_token_here
 GEMINI_TOKEN=gemini_token_here
+WHISPER_MODEL_PATH=/path/to/ggml-model.bin
 ```
 
 ### 3. Start the bot

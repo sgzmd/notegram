@@ -15,10 +15,11 @@ Notegram is a Kotlin-based Telegram bot that accepts user-sent audio/video, down
   - `MediaProcessingPipeline` interface defined; currently a stub implementation in `Main.kt` (“not implemented”).
 - **Transcription (`transcription`):**
   - `SpeechToTextService` interface abstracts speech transcription backends.
-  - `WhisperJniSpeechToTextService` uses the `whisper-jni` library to load a Whisper model and transcribe audio, converting input media to PCM float samples and collecting segment text via the JNI API. Errors surface clear IO exceptions on non-zero return codes.
+  - `WhisperJniSpeechToTextService` uses the `whisper-jni` library to load a Whisper model and transcribe audio, converting input media to PCM float samples and collecting segment text via the JNI API. If Java Sound cannot decode the source (e.g., m4a/AAC), it falls back to `ffmpeg` to transcode into mono 16k WAV before transcription. Errors surface clear IO exceptions on non-zero return codes or decode failures.
   - `WhisperEngine` abstraction allows fakes in tests; unit tests avoid loading native libs by injecting a fake engine.
   - AssemblyAI client remains pending in this branch.
 - **Entry point (`Main.kt`):** Builds clients, wires the Telegram handler, installs a shutdown hook, and blocks on a latch. Processing pipeline is intentionally stubbed pending AssemblyAI/Gemini integration.
+- **Pipeline:** A `SpeechToTextPipeline` now wraps any `SpeechToTextService` to produce a Markdown transcript and basic stats. Main currently wires it with Whisper.
 - **Logging:** Using kotlin-logging with lazy lambdas; logback config still TBD.
 - **Testing:** Unit tests cover config parsing, allowlist behavior, profanity generation, and Telegram processor flows (including oversized-file errors).
 

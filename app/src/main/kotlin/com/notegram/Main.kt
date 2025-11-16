@@ -11,12 +11,15 @@ import com.notegram.telegram.MediaProcessingRequest
 import com.notegram.util.AllowedUserChecker
 import com.notegram.util.ProfanityGenerator
 import com.pengrad.telegrambot.TelegramBot
+import com.notegram.transcription.SpeechToTextPipeline
+import com.notegram.transcription.WhisperJniSpeechToTextService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import okhttp3.OkHttpClient
+import java.nio.file.Path
 import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
@@ -30,7 +33,10 @@ fun main(args: Array<String>) {
     val responseSender = DefaultTelegramResponseSender(telegramClient)
     val allowedChecker = AllowedUserChecker(config.allowedUsernames)
     val profanityGenerator = ProfanityGenerator()
-    val pipeline = NotImplementedPipeline
+    val whisperModelPath = System.getenv("WHISPER_MODEL_PATH")?.let(Path::of)
+        ?: error("WHISPER_MODEL_PATH must be set to use Whisper transcription")
+    val speechToText = WhisperJniSpeechToTextService(modelPath = whisperModelPath)
+    val pipeline: MediaProcessingPipeline = SpeechToTextPipeline(speechToText)
 
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val processor = TelegramMessageProcessor(

@@ -28,6 +28,7 @@ class WhisperJniSpeechToTextService(
     private val modelPath: Path,
     private val language: String = "en",
     private val whisper: WhisperEngine = RealWhisperEngine(),
+    private val transcoder: AudioTranscoder = FfmpegAudioTranscoder(),
 ) : SpeechToTextService {
 
     private val logger = KotlinLogging.logger {}
@@ -58,8 +59,24 @@ class WhisperJniSpeechToTextService(
             16_000f,
             false, // little-endian
         )
-        val rawStream = AudioSystem.getAudioInputStream(path.toFile())
-        val pcmStream: AudioInputStream = AudioSystem.getAudioInputStream(targetFormat, rawStream)
+        var tempWav: Path? = null
+        try {
+            val sourceFile = path.toFile()
+            val rawStream = AudioSystem.getAudioInputStream(sourceFile)
+            val pcmStream: AudioInputStream = AudioSystem.getAudioInputStream(targetFormat, rawStream)
+            return readPcmStream(pcmStream)
+        } catch (e: Exception) {
+            logger.warn(e) { "Primary audio decode failed, attempting ffmpeg transcode" }
+            tempWav = transcoder.transcodeToWav(path)
+            val pcmStream = AudioSystem.getAudioInputStream(tempWav.toFile())
+            val converted = AudioSystem.getAudioInputStream(targetFormat, pcmStream)
+            return readPcmStream(converted)
+        } finally {
+            tempWav?.let { runCatching { it.toFile().delete() } }
+        }
+    }
+
+    private fun readPcmStream(pcmStream: AudioInputStream): FloatArray {
         val bytes = ByteArrayOutputStream()
         pcmStream.use { stream ->
             val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
