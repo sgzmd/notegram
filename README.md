@@ -10,6 +10,7 @@ This repository hosts a Kotlin-based Telegram bot that transcribes user-submitte
 - Access tokens for Telegram, AssemblyAI, and Gemini
 - At least one Telegram username allowed to interact with the bot (prefix optional `@` will be stripped)
 - Whisper model file path accessible to the runtime (set `WHISPER_MODEL_PATH`)
+- Docker users: `ffmpeg` is baked into the image; mount your model at `/models/ggml-model.bin` or override `WHISPER_MODEL_PATH`.
 
 ### 2. Create a local environment file
 Create `.env.local` in the repository root (or another path referenced via `ENV_FILE`). Example:
@@ -20,6 +21,17 @@ ALLOWED_USERS=sgzmd,design
 ASSEMBLYAI_TOKEN=assemblyai_token_here
 GEMINI_TOKEN=gemini_token_here
 WHISPER_MODEL_PATH=/path/to/ggml-model.bin
+
+## Docker
+
+A multi-stage Dockerfile is available under `docker/` and includes `ffmpeg` and all runtime dependencies. Build and run with Compose:
+
+```bash
+cd docker
+docker compose up --build
+```
+
+Compose reads `.env` (in `docker/`) and falls back to `../.env` for required tokens and mounts `../models` into `/models` (update `WHISPER_MODEL_PATH` accordingly). CLI args are passed from `.env` values by Compose; missing variables will now cause Compose to fail fast instead of defaulting to blanks.
 ```
 
 ### 3. Start the bot
