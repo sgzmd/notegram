@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.telegram.bot)
     implementation(libs.kotlin.logging)
+    implementation(libs.whisper.jni)
 
     runtimeOnly(libs.logback.classic)
 
