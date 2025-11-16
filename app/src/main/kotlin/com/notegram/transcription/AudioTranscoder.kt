@@ -14,7 +14,9 @@ interface AudioTranscoder {
     fun transcodeToWav(input: Path): Path
 }
 
-class FfmpegAudioTranscoder : AudioTranscoder {
+class FfmpegAudioTranscoder(
+    private val ffmpegCommand: List<String> = listOf("ffmpeg"),
+) : AudioTranscoder {
     private val logger = KotlinLogging.logger {}
     override fun transcodeToWav(input: Path): Path {
         val output = createTempFile(prefix = "notegram-ffmpeg-", suffix = ".wav")

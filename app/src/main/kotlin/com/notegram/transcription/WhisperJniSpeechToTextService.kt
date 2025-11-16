@@ -61,12 +61,6 @@ class WhisperJniSpeechToTextService(
         )
         var tempWav: Path? = null
         try {
-            val sourceFile = path.toFile()
-            val rawStream = AudioSystem.getAudioInputStream(sourceFile)
-            val pcmStream: AudioInputStream = AudioSystem.getAudioInputStream(targetFormat, rawStream)
-            return readPcmStream(pcmStream)
-        } catch (e: Exception) {
-            logger.warn(e) { "Primary audio decode failed, attempting ffmpeg transcode" }
             tempWav = transcoder.transcodeToWav(path)
             val pcmStream = AudioSystem.getAudioInputStream(tempWav.toFile())
             val converted = AudioSystem.getAudioInputStream(targetFormat, pcmStream)

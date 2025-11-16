@@ -13,6 +13,7 @@ import com.notegram.util.ProfanityGenerator
 import com.pengrad.telegrambot.TelegramBot
 import com.notegram.transcription.SpeechToTextPipeline
 import com.notegram.transcription.WhisperJniSpeechToTextService
+import com.notegram.transcription.FfmpegAudioTranscoder
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,11 @@ fun main(args: Array<String>) {
     val profanityGenerator = ProfanityGenerator()
     val whisperModelPath = System.getenv("WHISPER_MODEL_PATH")?.let(Path::of)
         ?: error("WHISPER_MODEL_PATH must be set to use Whisper transcription")
-    val speechToText = WhisperJniSpeechToTextService(modelPath = whisperModelPath)
+    val ffmpegCmd = System.getenv("FFMPEG_CMD") ?: "ffmpeg"
+    val speechToText = WhisperJniSpeechToTextService(
+        modelPath = whisperModelPath,
+        transcoder = FfmpegAudioTranscoder(ffmpegCmd.split(" ").filter { it.isNotBlank() }),
+    )
     val pipeline: MediaProcessingPipeline = SpeechToTextPipeline(speechToText)
 
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

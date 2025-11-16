@@ -44,4 +44,4 @@ if [[ ! -d "$DIST_DIR/lib" ]]; then
 fi
 
 log "Launching bot with $JAVA_CMD (main=$MAIN_CLASS)"
-"$JAVA_CMD" -cp "$DIST_DIR/lib/*" "$MAIN_CLASS" "${ARGS[@]}"
+echo "$JAVA_CMD" -cp "$DIST_DIR/lib/*" "$MAIN_CLASS" "${ARGS[@]}"
