@@ -71,6 +71,12 @@ Implement AssemblyAI client:
 - poll job status  
 - return transcript text  
 
+Abstract concrete implementation behind an interface so we can plug in local Whisper-based implementation.
+
+STAGE 4.5: 
+
+Implement speech-to-text using WhisperJNI
+
 STAGE 5:  
 Implement Gemini client:  
 - send transcript text  

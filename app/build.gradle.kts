@@ -33,6 +33,7 @@ dependencies {
     runtimeOnly(libs.logback.classic)
 
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockwebserver)
 }
 
 testing {
