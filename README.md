@@ -53,6 +53,7 @@ Logs stream to the console through Gradle. Stop the bot with `Ctrl+C`.
 - **Permission denied**: run `chmod +x scripts/start-local.sh` if the script loses execute permissions.
 - **Gradle daemon issues**: stop daemons with `./gradlew --stop` and rerun the script.
 - **Token errors from Telegram/AssemblyAI/Gemini**: verify the exported variables or .env contents.
+- **File too large**: Telegram bots cannot download media beyond ~20MB—trim or compress before sending.
 
 ## Repository Structure (excerpt)
 - `app/`: Kotlin source, tests, and Gradle module configuration.

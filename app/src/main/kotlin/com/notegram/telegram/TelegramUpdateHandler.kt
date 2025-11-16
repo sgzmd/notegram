@@ -131,6 +131,10 @@ class TelegramMessageProcessor(
 
         val downloaded = try {
             mediaDownloader.download(media)
+        } catch (ex: MediaTooLargeException) {
+            logger.warn(ex) { "File too large to download for chat ${message.chatId}" }
+            responseSender.sendProcessingFailure(message.chatId, message.messageId, "That file is too large for Telegram to download (max ~20MB). Please send a smaller clip.")
+            return
         } catch (ex: Exception) {
             logger.error(ex) { "Failed to download Telegram media ${media.fileId}" }
             responseSender.sendProcessingFailure(message.chatId, message.messageId, "Could not download media")

@@ -92,6 +92,34 @@ class TelegramMessageProcessorTest {
         processor.process(message)
 
         assertEquals(1, sender.failures.size)
+        assertTrue(sender.failureReasons.single().contains("Could not download"))
+        assertTrue(pipeline.invocations.isEmpty())
+    }
+
+    @Test
+    fun `too large file notifies user with hint`() = runTest {
+        val sender = RecordingResponseSender()
+        val downloader = object : TelegramMediaDownloader {
+            override suspend fun download(media: TelegramMediaDescriptor): DownloadedMedia {
+                throw MediaTooLargeException("file is too big")
+            }
+        }
+        val pipeline = RecordingPipeline()
+        val processor = buildProcessor(sender = sender, downloader = downloader, pipeline = pipeline)
+        val media = TelegramMediaDescriptor(
+            fileId = "file",
+            type = TelegramMediaType.VOICE,
+            fileName = null,
+            mimeType = null,
+            sizeBytes = null,
+            durationSeconds = null,
+        )
+        val message = IncomingTelegramMessage(chatId = 1L, messageId = 2, username = "alice", media = media)
+
+        processor.process(message)
+
+        assertEquals(1, sender.failures.size)
+        assertTrue(sender.failureReasons.single().contains("too large", ignoreCase = true))
         assertTrue(pipeline.invocations.isEmpty())
     }
 
@@ -154,6 +182,7 @@ private class RecordingResponseSender : TelegramResponseSender {
     val profanity = mutableListOf<Pair<Long, Int>>()
     val unsupported = mutableListOf<Pair<Long, Int>>()
     val failures = mutableListOf<Pair<Long, Int>>()
+    val failureReasons = mutableListOf<String>()
     var lastSuccess: SuccessRecord? = null
 
     override fun sendAcknowledgement(chatId: Long, replyToMessageId: Int) {
@@ -174,6 +203,7 @@ private class RecordingResponseSender : TelegramResponseSender {
 
     override fun sendProcessingFailure(chatId: Long, replyToMessageId: Int, reason: String) {
         failures += chatId to replyToMessageId
+        failureReasons += reason
     }
 }
 

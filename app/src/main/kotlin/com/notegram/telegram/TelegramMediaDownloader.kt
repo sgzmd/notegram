@@ -42,7 +42,11 @@ class DefaultTelegramMediaDownloader(
     private fun fetchTelegramFile(fileId: String): com.pengrad.telegrambot.model.File {
         val response: GetFileResponse = telegramClient.execute(GetFile(fileId))
         if (!response.isOk) {
-            throw IOException("Failed to fetch Telegram file metadata: ${response.description()}")
+            val description = response.description() ?: "unknown error"
+            if (description.contains("file is too big", ignoreCase = true)) {
+                throw MediaTooLargeException(description)
+            }
+            throw IOException("Failed to fetch Telegram file metadata: $description")
         }
         return response.file() ?: throw IOException("Telegram response missing file metadata")
     }
@@ -72,3 +76,5 @@ class DefaultTelegramMediaDownloader(
         }
     }
 }
+
+class MediaTooLargeException(message: String) : IOException(message)
